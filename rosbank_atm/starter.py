@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Apr  7 22:38:15 2018
-
 @author: Yury
 """
 
