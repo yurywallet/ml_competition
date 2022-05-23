@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May 29 16:48:42 2018
-
-@author: Yury
-"""
-# -*- coding: utf-8 -*-
-"""
 Created on Sat Apr  7 22:38:15 2018
 
 @author: Yury
@@ -30,9 +24,7 @@ from math import sin, cos, sqrt, atan2, radians
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import NearestNeighbors
 
-
 from sklearn.metrics import mean_squared_error
-
 from sklearn.model_selection import train_test_split
 
 def rmse(y_true, y_pred):
@@ -70,16 +62,13 @@ def merge_l(a, b, col):
 #def distance(x,y):
 #    return geopy.distance.geodesic(x, y).km
 
-
-
-
 def distance(x,y):
     R = 6373.0 # радиус земли в километрах
     """
     Параметры
     ----------
-    x : tuple, широта и долгота первой геокоординаты 
-    y : tuple, широта и долгота второй геокоординаты 
+    x : tuple, lat and lon of first location
+    y : tuple, lat and lon of second location
     
     Результат
     ----------
@@ -92,12 +81,7 @@ def distance(x,y):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
     
-
 #distance(coords_1, coords_2)
-
-
-
-
 
 df_train = pd.read_csv('../data/train.csv', index_col=0)
 df_train.head()
@@ -107,20 +91,14 @@ df_train[['target']].describe()
 df_train['atm_group'].value_counts() 
 
 
-
 ''' balance '''
 
 #BAR plot
-
-
 
 #_______________________________________________
 
 df_test = pd.read_csv('../data/test.csv', index_col=0)
 df_test.head()
-
-
-
 
 
 import matplotlib.pyplot as plt
@@ -152,11 +130,6 @@ def histog(db, apl, off, label_1, label_2, st=10, bins=1):
         ax1.set_xlim([mi-st, ma])
     ax1.legend()
     #plt.xticks([st*i for i in range(0, 21)])
-
-    
-    
-    #look in scorecards
-    
 
     for i in range(1,3):
         
@@ -210,8 +183,6 @@ if y==1:
 
     df_train_c=df_train[~df_train['address'].isin(x)]
 
-
-
     X = df_train_c.append(df_test)
     x_ind=X.index
     
@@ -219,7 +190,6 @@ else:
     
     X = df_train.append(df_test)
     x_ind=X.index
-
 
 X['atm_group']=X['atm_group'].astype(str)
 dg='dodgerblue'
@@ -252,15 +222,9 @@ plt.tight_layout()
 plt.show()
 
 
-
-
-
 #histog(X, 'atm_group', off, 'Train', 'Test', st=10, bins=1)
 
-
 a=X[X['lat'].isna()][['address','atm_group']].sort_values(by='atm_group').drop_duplicates()
-
-
 
 cols=list(df_train.columns)
 
@@ -275,9 +239,6 @@ cols=list(df_train.columns)
 #df_train=handle_missing(df_train,"channel_type")
 #df_test=handle_missing(df_test,"channel_type")
 #
-
-
-
 
 import re
 
@@ -465,7 +426,6 @@ di={
 }
 
 
-
 def rus_city(s):
 #    s='улица А.О. Емельянова, 34, Южно-Сахалинск, Сахалинская область, Россия'
 #    s='улица Максима Горького, 20, Тамбов, 111100, Россия'
@@ -509,7 +469,6 @@ def rus_city(s):
     
     return pp.lower().strip(), qq.lower().strip()
 
-
 X[['street', 'city']]=X['address'].apply(lambda x: x if pd.isnull(x) else a_city(x)).apply(pd.Series)
 
 X['city']=X['city'].apply(lambda x: di[x] if x in di.keys() else x)
@@ -541,7 +500,6 @@ for i in dr:
     X['city_rus'].replace(i,'',inplace=True, regex=True)
     
 X['city_rus']=X['city_rus'].str.strip()
-
 
 
 b=X['city_rus'].value_counts()
@@ -591,49 +549,21 @@ def obl(s):
 X['obl_rus']= X['address_rus'].apply(lambda x: x if pd.isnull(x) else obl(x)).apply(pd.Series)
 
 b=X['obl_rus'].value_counts()
-
-
 b=X[X['city_rus']=='unknown']
-
-
 
 c=list(b['city'].unique())
 
-
-
 #
 #b.plot()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #a=X[['city','city_rus']].drop_duplicates()
 #b=X[X['city_rus']=='домодедово'][['address_rus', 'address','lat','long']]
 #
 
-
-''' Заполнить адреса которые пропущены'''
-
-
-
+''' fill missed address'''
 df_nan = pd.read_csv('../data/atm_nan.csv', sep=';', encoding='cp866')
 df_nan.head()
-
 
 X = X.set_index('address')
 df_nan=df_nan.set_index('address')
@@ -642,22 +572,12 @@ X['lat'] = X['lat'].fillna(df_nan['lat'])
 X['long'] = X['long'].fillna(df_nan['long'])
 X['city_rus'] = X['city_rus'].fillna(df_nan['city_rus'])
 
-
 X['address']=X.index
 #X=X.reset_index(drop=True)
 X.index=x_ind
 
 x=[i for i in df_nan['city_rus'].unique() if i not in X['city_rus'].unique()]
-
-
-
 a=X[X['long'].isna()]
-
-
-
-
-
-
 
 #
 #X['lat']=X.apply(lambda x: df_nan[df_nan['address']==x['address']]['lat'] if x['lat'].isna() else x['lat'] )
@@ -669,12 +589,8 @@ a=X[X['long'].isna()]
 #c=a.join(b)
 #c['city']=c.index
 
-
-
 ''' unknown 149 '''
 X['city_rus']=np.where(X['city_rus']=='unknown', X['city'],X['city_rus'])
-
-
 
 '''?????????"""'''
 
@@ -686,15 +602,8 @@ col='city_rus'
 X['lat'] = X['lat'].fillna(X.groupby(col)['lat'].transform('mean'))
 X['long'] = X['long'].fillna(X.groupby(col)['long'].transform('mean'))
 
-
-
-
-
 c=X[X['lat'].isna()][['address_rus', 'address','lat','long', 'isTrain', 'city', 'city_rus']]
 c=c[c['isTrain']==False]['address'].value_counts()
-
-
-
 #c=X[X['address'].isin(b.index)]
 
 '''??? TArget encoding '''
@@ -710,22 +619,7 @@ c=df_train.groupby('atm_group')['target'].mean()
 c=pd.DataFrame(c).to_dict()
 X['tar']=X['atm_group'].apply(lambda x: c[x] if x in c.keys() else 0)
 
-
-
-
 '''city'''
-
-
-
-
-
-
-
-
-
-
-
-
 #_____________________________________________
 
 #_____________________________________________
@@ -736,17 +630,6 @@ X['tar']=X['atm_group'].apply(lambda x: c[x] if x in c.keys() else 0)
 
 X['lat'] = X['lat'].fillna(X['lat'].mean())
 X['long'] = X['long'].fillna(X['long'].mean())
-
-
-
-
-
-
-
-
-
-
-
 
 #
 #
@@ -765,9 +648,6 @@ X['long'] = X['long'].fillna(X['long'].mean())
 #
 
 
-
-
-
 #Num of ATM's with the same  address
 c='address_rus'
 counts = X.groupby(c)['id'].count().reset_index().rename(columns={'id':'count'})
@@ -783,9 +663,6 @@ X['count_city'].fillna(0, inplace=True)
 
 
 ''' add same for atms in OSM'''
-
-
-
 '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
 #Working with target !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 X_g=X[X['isTrain']==True].groupby(['atm_group', 'lat', 'long'])['target'].mean()
@@ -799,8 +676,6 @@ X_g.reset_index(drop=True, inplace=True)
 X=pd.merge(X, X_g, how='left', on=['atm_group', 'lat', 'long'])
 X.drop(['target'], axis=1,inplace=True)
 X.rename(columns = {'new_target':'target'}, inplace = True)
-
-
 
 
 '''DROP DUPLICATES'''
@@ -818,9 +693,7 @@ X['long']=X.apply(lambda x: x['long'] +truncnorm(a=-0.0003, b=0.0003, scale=1).r
 
 #df=X[X['count_addr']>1][['count_addr','lat_c','lat']]
 
-
 ''' -----------------'''
-
 
 with open('../data/pickle/X.pickle', 'wb') as fout:
    pickle.dump(X, fout, protocol=pickle.HIGHEST_PROTOCOL)
@@ -828,7 +701,6 @@ with open('../data/pickle/X.pickle', 'wb') as fout:
 with open('../data/pickle/X.pickle', 'rb') as fin:
     X=pickle.load(fin)
     
-
 '''Tune'''
 c='city_rus'
 n=5
@@ -838,9 +710,6 @@ X[c] = X[c].apply(lambda x: 'RARE' if x in rare else x).fillna('RARE')
 X[c+'_rank']= X[c].rank().fillna(-1)
 
 
-#
-#
-
 '''Tune'''
 c='obl_rus'
 n=8
@@ -848,16 +717,11 @@ rare = X[c].value_counts()
 rare = X[c].value_counts()[(X[c].value_counts() < n) ==True].index
 X[c] = X[c].apply(lambda x: 'RARE' if x in rare else x).fillna('RARE')
 X[c+'_rank']= X[c].rank().fillna(-1)
-
-
-
     
-    
-    #------------------------------------------------
 
+	
 
-
-
+#------------------------------------------------
 
 with open('../data/pickle/full_tagged_nodes.pickle', 'rb') as fin:
     tagged_nodes=pickle.load(fin)
@@ -873,7 +737,6 @@ def unpack(df, column, fillna=None):
     return ret
 
 #df=unpack(df, 'tags', 0)   
-
 
 #ATM
 raw=0
@@ -905,23 +768,18 @@ if raw==1:
     
 #    , columns=['lat' , 'lon', 'city_rus', 'city', 'population'])
 #    atm=atm[~atm['city_rus'].isna()]
-
-
-    
-
-    
-    
-    # Сохраним список с выбранными объектами в отдельный файл
+ 
+    # save to separate file
     with open('../data/pickle/atm.pickle', 'wb') as fout:
        pickle.dump(atm, fout, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-#load
+#load (if we have preprepared file)
 with open('../data/pickle/atm.pickle', 'rb') as fin:
     atm=pickle.load(fin)
 #name, operator, currency,'cash_in': 'yes', 'currency:RUB': 'yes',
-#№банки в крыму которые не существуют, ухтабанк, петрокоммерц
 #нет оператора, нет name
+
 raw=0
 if raw==1:
     atm=unpack(atm, 2, fillna=None)  
@@ -955,8 +813,7 @@ if raw==1:
     'vtb24':'втб24',
     
     'банк втб (пао)':'втб',
-    
-    
+     
     'оао сбербанк россии':'сбербанк',
     'оао "сбербанк россии"':'сбербанк',
     'сбербанк (ограниченный доступ)':'сбербанк',
@@ -998,16 +855,12 @@ if raw==1:
     ' кб'
     ]
     for i in dr:
-        atm['operator'].replace(i,'',inplace=True, regex=True)
-    
-    
+        atm['operator'].replace(i,'',inplace=True, regex=True)  
     
     atm['operator'].replace('-',' ',inplace=True, regex=True)
     atm['operator']=atm['operator'].apply(lambda x: di[x] if x in di.keys() else x)
     a_u=atm['operator'].value_counts()
-    
-    
-    
+      
     for i in dr:
         atm['operator'].replace(i,'',inplace=True, regex=True)
     atm['operator']=atm['operator'].str.strip() 
@@ -1127,7 +980,7 @@ if raw==1:
         pickle.dump(atm, fout, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-#load
+#load (if we have saved another preprocessed file)
 with open('../data/pickle/atm_opera.pickle', 'rb') as fin:
     atm=pickle.load(fin)
 
@@ -1176,8 +1029,6 @@ atm_cashin=atm[atm['cash_in']==1]
 
 #----------------------------------------------
 
-
-
 def near(X_c, coords,  prefix):
     X_s=pd.DataFrame(X_centers)
     # строим структуру данных для быстрого поиска точек
@@ -1220,7 +1071,7 @@ X_atm=near(X_centers, coords,  'atm_c')
 coords = np.array(atm_cashin[['lat','lon']])
 X_atm_in=near(X_centers, coords,  'atm_in')
 
-#partner
+#partner - you can take money without commission from a partner bank atm
 part=[
 'альфа',
 'ак барс',
@@ -1244,8 +1095,6 @@ X_atm_part=near(X_centers, coords,  'atm_p')
 '''-----------------------------------------'''
 #___________________________________________
 
-
-
 '''-----------------------------------------'''
 #___________________________________________
 
@@ -1258,22 +1107,8 @@ X_atm_part=near(X_centers, coords,  'atm_p')
 '''-----------------------------------------'''
 #___________________________________________
 
-
-
-
-
-
 a=df_train['atm_group'].value_counts()
 b=df_test['atm_group'].value_counts()
-
-
-
-
-
-
-
-
-
 
 #_____________________________
 
@@ -1373,8 +1208,6 @@ x=cities[cities['city_rus'].isin(X['city_rus'].unique())][['city_rus','log_pop_r
 di=cities.set_index('city_rus').to_dict()['log_pop_round']
 
 
-
-
 X['log_pop_round']=X['city_rus'].apply(lambda x: di[x] if x in di.keys() else 0) #map(di).fillna(0)
 
 X['log_pop_round_rank']=X['log_pop_round'].rank().fillna(-1)
@@ -1384,27 +1217,8 @@ X['log_pop_round_per_atm']=X['log_pop_round']/X['count_city']
     
 # add to X population_log/atm_count_OSM   
     
-    
-    
-    
-    
-    
+  
 #BINS , LOG
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #Distance to the closest
 
@@ -1465,26 +1279,9 @@ dots['mean'] = dots.iloc[:,dots.columns.str.contains('distance')].mean(axis=1)
 dots.drop(['lat', 'long'], axis=1, inplace=True)
 #X = pd.concat([X, dots], axis=1)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #CITY
 
 #rare city
-
-
 #rare_cities = X.city.value_counts()[(X.city.value_counts() < 20) ==True].index
 #
 #
@@ -1493,15 +1290,6 @@ dots.drop(['lat', 'long'], axis=1, inplace=True)
 #X.city= X.city.rank().fillna(-1)
 #
 #
-
-
-
-
-
-
-
-
-
 #_________________________________________________________
 
 
@@ -1625,11 +1413,6 @@ if raw==0:
     X_centers = X[['lat', 'long']].as_matrix()
     X_centers=X[['lat','long']].values
     
-    
-    
-    
-    
-    
             
     #_____________________________
     
@@ -1676,11 +1459,9 @@ if raw==0:
     with open('../data/pickle/X_osm_dist.pickle', 'wb') as fout:
        pickle.dump(X_osm, fout, protocol=pickle.HIGHEST_PROTOCOL)
 
-#load
+#load data enriched with osm features
 with open('../data/pickle/X_osm_dist.pickle', 'rb') as fin:
     X_osm=pickle.load(fin)
-
-
 
 dr=['amenity_grave_yard', 'amenity_stripclub', 'amenity_nightclub', 'amenity_sauna', 'landuse_cemetery',
     'playground', 'amenity_money_transfer']
@@ -1689,18 +1470,10 @@ for i in dr:
     dr_c=[x for x in X_osm.columns if i in x]
     X_osm.drop(dr_c, axis=1, inplace=True)
 
-
-
 #________________________________________________________
 
 
 #X.reset_index(drop=True, inplace=True)
-
-
-
-
-
-
 
 from OHE import OHE_single
 
@@ -1822,11 +1595,6 @@ x=[i for i in X.columns if i not in X_test.columns]
 #x=X_f.head()
 
 
-
-
-
-
-
 # Сохраним список с выбранными объектами в отдельный файл
 with open('../data/pickle/X_f.pickle', 'wb') as fout:
    pickle.dump(X_f, fout, protocol=pickle.HIGHEST_PROTOCOL)
@@ -1834,11 +1602,6 @@ with open('../data/pickle/X_f.pickle', 'wb') as fout:
 #load
 with open('../data/pickle/X_f.pickle', 'rb') as fin:
     X_f=pickle.load(fin)
-
-
-
-
-
 
 
 #MAjor class by ATM_GROUP
@@ -1860,6 +1623,10 @@ if ba==3:
     }
     y_gr= X_f[X_f.isTrain]['atm_group'].map(di).astype(str)
 
+#--------------------------------------------------------------------------------------------------------------------------------	
+# MODELS
+#--------------------------------------------------------------------------------------------------------------------------------
+
 from sklearn.model_selection import KFold
 see=12134
 folds=10
@@ -1873,8 +1640,6 @@ rr={}
 from xgboost              import XGBRegressor
 import lightgbm as lgb
 
-
-
 models=[ 'lgbm',] #, 'xgb']
 av_score=0
 imp=pd.DataFrame()
@@ -1885,8 +1650,6 @@ pred=pd.DataFrame(index=df_test.index)
 strat=1
 l=0
 for i in models:
-
-
 
     see=[12134,12645, 776611, 101, 2001]
 #    see=[12134,]
@@ -1902,13 +1665,8 @@ for i in models:
                             colsample_bytree = 0.8,
                             subsample = 0.9, 
                             reg_alpha=0.1, 
-		                    reg_lambda=0, 
-
+		               reg_lambda=0, 
                             nthread=3)
-
-
-
-
 
         rr['xgb'] =XGBRegressor(
                         booster='gbtree',
@@ -1984,11 +1742,6 @@ av_score/=folds*len(see)*len(models)
 
 print('___________________________')
 print('RMSE  av ', av_score)
-
-
-
-
-
 
 
 #lgb.plot_importance(gbm)
