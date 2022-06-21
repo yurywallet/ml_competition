@@ -16,4 +16,4 @@ Examples of solutions for ML competitions
 - RosBank. ATM device geo-placing competition 
   - Result: Ranked 17 in (top-6%)
   - [Task](https://boosters.pro/championship/rosbank2/overview)
-  - [Code]() 
+  - [Code](https://github.com/yurywallet/ml_competition/tree/main/rosbank_atm) 
