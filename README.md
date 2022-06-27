@@ -19,5 +19,8 @@ Examples of solutions for ML competitions
   - [Code](https://github.com/yurywallet/ml_competition/tree/main/rosbank_atm) 
 
 
-## kaggle
-[Competitions](https://www.kaggle.com/yurywallet/competitions)
+## Kaggle
+- [Competitions](https://www.kaggle.com/yurywallet/competitions)
+
+## Test assignments (job application)
+- [Homework tests](https://github.com/yurywallet/test_assignments)
