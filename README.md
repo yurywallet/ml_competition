@@ -21,6 +21,7 @@ Examples of solutions for ML competitions
 
 ## Kaggle
 - [Competitions](https://www.kaggle.com/yurywallet/competitions)
+- [Code](https://www.kaggle.com/yurywallet/code)
 
 ## Test assignments (job application)
 - [Homework tests](https://github.com/yurywallet/test_assignments)
